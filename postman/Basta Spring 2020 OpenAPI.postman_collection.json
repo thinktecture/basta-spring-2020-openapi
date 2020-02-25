@@ -1,0 +1,740 @@
+{
+	"info": {
+		"_postman_id": "64811f59-8624-40e1-b724-b606551bcea7",
+		"name": "BASTA Spring 2020 OpenApi",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "GET an access token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d4d2a78b-32d7-4b8a-a11d-24db6e403d85",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"var accessToken = jsonData.access_token;",
+							"",
+							"pm.test(\"Response contains access_token\", () => {",
+							"    pm.expect(accessToken).to.exist;",
+							"});",
+							"",
+							"pm.environment.set(\"access_token\", accessToken);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/x-www-form-urlencoded",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "grant_type",
+							"value": "client_credentials",
+							"type": "text"
+						},
+						{
+							"key": "scope",
+							"value": "api",
+							"type": "text"
+						},
+						{
+							"key": "client_id",
+							"value": "client",
+							"type": "text"
+						},
+						{
+							"key": "client_secret",
+							"value": "secret",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "https://demo.identityserver.io/connect/token",
+					"protocol": "https",
+					"host": [
+						"demo",
+						"identityserver",
+						"io"
+					],
+					"path": [
+						"connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "api",
+			"item": [
+				{
+					"name": "v1",
+					"item": [
+						{
+							"name": "Ping from Health Controller",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b2f8877a-39e5-4069-b772-5b9e61033894",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/health",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"health"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get five forecasts",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "be5844a6-7ea4-489f-9359-d586f7034318",
+										"exec": [
+											"var ajv = new require('ajv')({logger: console});",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test('Data structure is valid', function() {",
+											"    pm.expect(jsonData).not.to.be.null;",
+											"    pm.expect(jsonData).not.to.be.undefined;",
+											"",
+											"    var schema = {",
+											"        \"type\": \"array\",",
+											"        \"items\": {",
+											"            \"type\": \"object\",",
+											"            \"properties\": {",
+											"                \"date\": {",
+											"                    \"type\": \"string\"",
+											"                },",
+											"                \"temperatureC\": {",
+											"                    \"type\": \"number\"",
+											"                },",
+											"                \"temperatureF\": {",
+											"                    \"type\": \"number\"",
+											"                },",
+											"                \"summary\": {",
+											"                    \"type\": \"string\"",
+											"                }",
+											"            }",
+											"        }",
+											"    };    ",
+											"    ",
+											"    pm.expect(ajv.validate(schema, jsonData)).to.be.true;",
+											"});",
+											"",
+											"pm.test(\"Have 5 forecasts\", function () {",
+											"    pm.expect(jsonData.length).to.equal(5);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Authorization",
+										"type": "text",
+										"value": "Bearer {{access_token}}",
+										"disabled": true
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/v1/weatherforecast",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v1",
+										"weatherforecast"
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a8a6d382-8ea2-4943-bcbc-7b46496cbeef",
+								"type": "text/javascript",
+								"exec": [
+									"pm.environment.set('version', 'v1');",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "27347813-94a4-4f30-9651-36c8343e5290",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "v2",
+					"item": [
+						{
+							"name": "Ping from Health Controller",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b2f8877a-39e5-4069-b772-5b9e61033894",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/health",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"health"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get a forecast page of 3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "69f727d3-8030-4616-9f22-f76e8a36837f",
+										"exec": [
+											"var ajv = new require('ajv')({logger: console});",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test('Data structure is valid', function() {",
+											"    pm.expect(jsonData).not.to.be.null;",
+											"    pm.expect(jsonData).not.to.be.undefined;",
+											"",
+											"    var schema = {",
+											"        \"type\": \"object\",",
+											"        \"properties\" : {",
+											"            \"startIndex\": {",
+											"                \"type\": \"integer\"",
+											"            },",
+											"            \"totalAmount\": {",
+											"                \"type\": \"integer\"",
+											"            },",
+											"            \"entries\": {",
+											"                \"type\": \"array\",",
+											"                \"items\": {",
+											"                    \"type\": \"object\",",
+											"                    \"properties\": {",
+											"                        \"date\": {",
+											"                            \"type\": \"string\"",
+											"                        },",
+											"                        \"temperatureC\": {",
+											"                            \"type\": \"number\"",
+											"                        },",
+											"                        \"temperatureF\": {",
+											"                            \"type\": \"number\"",
+											"                        },",
+											"                        \"summary\": {",
+											"                            \"type\": \"string\"",
+											"                        }",
+											"                    }",
+											"                },",
+											"            }",
+											"        }",
+											"    };    ",
+											"    ",
+											"    pm.expect(ajv.validate(schema, jsonData)).to.be.true;",
+											"});",
+											"",
+											"pm.test(\"Have 3 forecasts\", function () {",
+											"    pm.expect(jsonData.entries.length).to.equal(3);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/weatherforecast?skip=3&take=3",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"weatherforecast"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "3",
+											"description": "The articles to skip while fetching."
+										},
+										{
+											"key": "take",
+											"value": "3",
+											"description": "The amount of articles to return."
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Fetches an article based on its number",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "233c57eb-4873-4696-aab3-244f95abd192",
+										"exec": [
+											"var ajv = new require('ajv')({logger: console});",
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											"",
+											"pm.test('Data structure is valid', function() {",
+											"    var jsonData = pm.response.json();",
+											"    pm.expect(jsonData).not.to.be.null;",
+											"    pm.expect(jsonData).not.to.be.undefined;",
+											"",
+											"    var schema = {",
+											"        \"type\": \"object\",",
+											"        \"properties\" : {",
+											"            \"number\": {",
+											"                \"type\": \"integer\"",
+											"            },",
+											"            \"name\": {",
+											"                \"type\": \"string\"",
+											"            },",
+											"            \"description\": {",
+											"                \"type\": \"string\"",
+											"            },",
+											"            \"price\": {",
+											"                \"type\": \"number\"",
+											"            }",
+											"        }",
+											"    };    ",
+											"    ",
+											"    pm.expect(ajv.validate(schema, jsonData)).to.be.true;",
+											"});",
+											"",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "correlation-id",
+										"value": "some- id",
+										"description": "Optional correlation id. Can be any string. Should be unique per call. If provided, all logging will use this id to be able to correlate requests spanning multiple services."
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/api/v2/Article/:number",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"v2",
+										"Article",
+										":number"
+									],
+									"variable": [
+										{
+											"key": "number",
+											"value": "1",
+											"description": "The article number."
+										}
+									]
+								}
+							},
+							"response": [
+								{
+									"name": "Article was not found.",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": {
+													"content": "Optional correlation id. Can be any string. Should be unique per call. If provided, all logging will use this id to be able to correlate requests spanning multiple services.",
+													"type": "text/plain"
+												},
+												"key": "correlation-id",
+												"value": "<string>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/v2/Article/<integer>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"Article",
+												"<integer>"
+											]
+										}
+									},
+									"status": "Not Found",
+									"code": 404,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"type\": \"<string>\",\n \"title\": \"<string>\",\n \"status\": \"<integer>\",\n \"detail\": \"<string>\",\n \"instance\": \"<string>\",\n \"extensions\": \"<object>\"\n}"
+								},
+								{
+									"name": "Article was found",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"description": {
+													"content": "Optional correlation id. Can be any string. Should be unique per call. If provided, all logging will use this id to be able to correlate requests spanning multiple services.",
+													"type": "text/plain"
+												},
+												"key": "correlation-id",
+												"value": "<string>"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/api/v2/Article/<integer>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"api",
+												"v2",
+												"Article",
+												"<integer>"
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n \"name\": \"<string>\",\n \"number\": \"<integer>\",\n \"price\": \"<float>\",\n \"description\": \"<string>\"\n}"
+								}
+							]
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "8bccc828-8e30-41ae-8ddf-f7777165bae0",
+								"type": "text/javascript",
+								"exec": [
+									"pm.environment.set('version', 'v2');",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "cb3ff5a0-8583-4b5c-bfa6-12f99c3d8fc2",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "v3",
+					"item": [
+						{
+							"name": "Ping from Health Controller",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "b2f8877a-39e5-4069-b772-5b9e61033894",
+										"exec": [
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"auth": {
+									"type": "noauth"
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/health",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"health"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Forecast should not exist in v3",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "69f727d3-8030-4616-9f22-f76e8a36837f",
+										"exec": [
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"    pm.expect(pm.response.json().error.code).to.equal(\"UnsupportedApiVersion\");",
+											"});",
+											""
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{baseUrl}}/api/{{version}}/weatherforecast?skip=3&take=3",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"api",
+										"{{version}}",
+										"weatherforecast"
+									],
+									"query": [
+										{
+											"key": "skip",
+											"value": "3"
+										},
+										{
+											"key": "take",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "002e2d40-2412-4101-91e1-eefc2566ea2a",
+								"type": "text/javascript",
+								"exec": [
+									"pm.environment.set('version', 'v3');",
+									""
+								]
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "41554bc7-3d2f-4d3f-8198-4303ce6c8b7b",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "80b43870-ed20-4790-9eaa-8c72dd4109d0",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "32177e66-c8cc-4327-9835-c00fff581b5a",
+						"type": "text/javascript",
+						"exec": [
+							"pm.test(\"Response time is less than 200ms\", function () {",
+							"    pm.expect(pm.response.responseTime).to.be.below(200);",
+							"});",
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{access_token}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "9653fa60-97cc-40c3-a646-6866158fdfa4",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "ae41ac5d-ccfb-48e5-a6ec-c03e98b87c57",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "46d2477b-194d-4957-8f31-34b510785120",
+			"key": "baseUrl",
+			"value": "https://localhost:5001",
+			"type": "string"
+		},
+		{
+			"id": "af0988b5-3364-4be9-9e27-0bacacc95537",
+			"key": "access_token",
+			"value": null,
+			"type": "any"
+		},
+		{
+			"id": "c789739b-4220-4f64-b032-7fbc2c5a5851",
+			"key": "version",
+			"value": "v1",
+			"type": "string"
+		}
+	]
+}
