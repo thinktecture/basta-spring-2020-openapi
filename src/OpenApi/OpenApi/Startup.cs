@@ -6,12 +6,14 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using OpenApi.Services;
 using OpenApi.Swagger;
+using Swashbuckle.AspNetCore.SwaggerUI;
 
 namespace OpenApi
 {
@@ -38,9 +40,9 @@ namespace OpenApi
 			services.AddControllers(config =>
 			{
 				#region Content negotiation
-				//config.RespectBrowserAcceptHeader = true;
-				//config.InputFormatters.Add(new XmlSerializerInputFormatter(config));
-				//config.OutputFormatters.Add(new XmlSerializerOutputFormatter());
+				config.RespectBrowserAcceptHeader = true;
+				config.InputFormatters.Add(new XmlSerializerInputFormatter(config));
+				config.OutputFormatters.Add(new XmlSerializerOutputFormatter());
 				#endregion
 			});
 
@@ -115,9 +117,10 @@ namespace OpenApi
 						OpenIdConnectUrl = new Uri("https://demo.identityserver.io"),
 						Flows = new OpenApiOAuthFlows()
 						{
-							Implicit = new OpenApiOAuthFlow()
+							AuthorizationCode = new OpenApiOAuthFlow()
 							{
 								AuthorizationUrl = new Uri("https://demo.identityserver.io/connect/authorize"),
+								TokenUrl = new Uri("https://demo.identityserver.io/connect/token"),
 								Scopes = new Dictionary<string, string>()
 								{
 									{ "api", "API Access" },
@@ -125,13 +128,13 @@ namespace OpenApi
 							},
 						},
 					});
-
 					#endregion
 
 					#region Customization
 					c.EnableAnnotations();
 					c.IncludeXmlComments("./OpenApi.xml");
 
+					c.OperationFilter<AddSecurityRequirementOperationFilter>();
 					c.OperationFilter<AddCorrelationIdHeaderOperationFilter>();
 					c.OperationFilter<AddDeletionIdHeaderOperationFilter>();
 					c.DocumentFilter<ApiInfoDocumentFilter>();
@@ -184,7 +187,12 @@ namespace OpenApi
 				#endregion
 
 				#region AuthN & AuthZ
-				c.OAuthClientId("implicit");
+				c.OAuthConfigObject = new OAuthConfigObject()
+				{
+					ClientId = "interactive.public",
+					ClientSecret = "secret",
+					UsePkceWithAuthorizationCodeGrant = true,
+				};
 				#endregion
 
 				#region Customization
