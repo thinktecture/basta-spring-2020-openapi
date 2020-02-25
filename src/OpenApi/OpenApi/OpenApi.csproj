@@ -1,7 +1,8 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <DocumentationFile>OpenApi.xml</DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,6 +11,12 @@
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="5.0.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Filters" Version="5.0.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="OpenApi.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

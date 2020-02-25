@@ -360,3 +360,5 @@ MigrationBackup/
 !.vscode/launch.json
 !.vscode/extensions.json
 *.code-workspace
+
+src/OpenApi/OpenApi/OpenApi.xml
