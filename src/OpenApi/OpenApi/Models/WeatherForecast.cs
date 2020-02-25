@@ -1,6 +1,6 @@
 using System;
 
-namespace OpenApi
+namespace OpenApi.Models
 {
 	public class WeatherForecast
 	{
