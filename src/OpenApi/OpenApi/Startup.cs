@@ -128,6 +128,7 @@ namespace OpenApi
 							},
 						},
 					});
+
 					#endregion
 
 					#region Customization
