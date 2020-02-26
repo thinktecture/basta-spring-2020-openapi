@@ -43,6 +43,18 @@
 			"#endregion",
 		]
 	},
+	"Add OAuthConfigObject file": {
+		"prefix": "oauthconfig",
+		"scope": "csharp",
+		"body": [
+			"c.OAuthConfigObject = new OAuthConfigObject()",
+			"{",
+			"\tClientId = \"interactive.public\",",
+			"\tClientSecret = \"secret\",",
+			"\tUsePkceWithAuthorizationCodeGrant = true,",
+			"};"
+		]
+	},
 	"Add documentation file": {
 		"prefix": "docfile",
 		"body": [
@@ -52,5 +64,34 @@
 			"\t</None>",
 			"</ItemGroup>"
 		]
-	}
+	},
+	"Generator Versions": {
+		"prefix": "genversions",
+		"scope": "csharp",
+		"body": [
+			"foreach (var apiVersion in ApiVersions)",
+			"{",
+			"\tvar versionString = $\"v{apiVersion}\";",
+			"",
+			"\tc.SwaggerDoc(versionString, new OpenApiInfo()",
+			"\t{",
+			"\t\tTitle = $\"OpenAPI Sample API {versionString}\",",
+			"\t\tVersion = versionString,",
+			"\t\tDescription = \"Sample API for an OpenAPI conference talk.\",",
+			"\t\tContact = new SampleApiContact(),",
+			"\t\tLicense = new SampleApiLicense(),",
+			"\t});",
+			"}"
+		]
+	},
+	"UI Versions": {
+		"prefix": "uiversions",
+		"scope": "csharp",
+		"body": [
+			"foreach (var apiVersion in ApiVersions)",
+			"{",
+			"\tc.SwaggerEndpoint($\"/swagger/v{version}/swagger.json\", $\"OpenAPI Sample API v{version}\");",
+			"}"
+		]
+	},
 }
