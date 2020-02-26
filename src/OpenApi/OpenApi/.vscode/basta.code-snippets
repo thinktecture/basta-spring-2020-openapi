@@ -42,5 +42,15 @@
 			"});",
 			"#endregion",
 		]
+	},
+	"Add documentation file": {
+		"prefix": "docfile",
+		"body": [
+			"<ItemGroup>",
+			"\t<None Update=\"OpenApi.xml\">",
+			"\t\t<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>",
+			"\t</None>",
+			"</ItemGroup>"
+		]
 	}
 }
