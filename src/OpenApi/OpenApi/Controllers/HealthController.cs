@@ -26,7 +26,6 @@ namespace OpenApi.Controllers
 		/// </summary>
 		[HttpPut]
 		[ProducesResponseType(200)]
-		[ApiExplorerSettings(IgnoreApi = true)]
 		public IActionResult Kill()
 		{
 			RaiseEvent();
